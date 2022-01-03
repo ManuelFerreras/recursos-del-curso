@@ -18,7 +18,8 @@ contract VentaDeObjetos {
 
 
     // Creamos un arreglos de Subastas, donde se almacenaran las subastas creadas.
-    Subasta[] public subastas;
+    Subasta[] subastas;
+    mapping (address => uint[]) subastasDeDireccion;
 
 
     // Eventos
@@ -62,16 +63,17 @@ contract VentaDeObjetos {
     function crearSubasta(string memory articulo_, string memory descripcion_, uint256 precio_, uint256 tiempoFin_) public {
 
         // Chequeamos que los datos ingresados son correctos.
-        require(keccak256(abi.encodePacked(articulo_)) != keccak256(abi.encodePacked("")));
-        require(keccak256(abi.encodePacked(descripcion_)) != keccak256(abi.encodePacked("")));
-        require(precio_ > 0);
-        require(tiempoFin_ > block.timestamp);
+        require(keccak256(abi.encodePacked(articulo_)) != keccak256(abi.encodePacked("")), "El nombre no puede estar vacio.");
+        require(keccak256(abi.encodePacked(descripcion_)) != keccak256(abi.encodePacked("")), "La descripcion no puede estar vacia.");
+        require(precio_ > 0, "El precio debe ser mayor a 0.");
+        require(tiempoFin_ > 0, "El tiempo de finalizacion debe ser mayor a 0.");
 
         // Agregar nueva subasta.
-        subastas.push(Subasta(articulo_, descripcion_, precio_, tiempoFin_, msg.sender, msg.sender, true));
+        subastas.push(Subasta(articulo_, descripcion_, precio_, tiempoFin_ + block.timestamp, msg.sender, msg.sender, true));
+        subastasDeDireccion[msg.sender].push(subastas.length);
 
         // Emitimos el Evento Correspondiente.
-        emit nuevaSubasta(articulo_, descripcion_, precio_, tiempoFin_, msg.sender);
+        emit nuevaSubasta(articulo_, descripcion_, precio_, tiempoFin_ + block.timestamp, msg.sender);
 
     }
 
@@ -116,6 +118,42 @@ contract VentaDeObjetos {
 
         // Emitimos el evento correspondiente.
         emit ganadorDeSubasta(subastas[idSubasta_].ganadorActual, idSubasta_);
+
+    }
+
+
+    function devolverSubastas() public view returns(Subasta[] memory) {
+        
+        // Devolvemos el array de subastas.
+        return subastas;
+
+    }
+
+
+    function devolverSubasta(uint idSubasta_) public view returns(Subasta memory) {
+
+        // Devolvemos la subasa en el indice.
+        return subastas[idSubasta_];
+
+    }
+
+
+    function devolverSubastasDeDireccion(address direccion_) public view returns(uint[] memory) {
+
+        // Devolvemos el array enlazado con la direccion en el mapping.
+        return subastasDeDireccion[direccion_];
+
+    }
+
+
+    function tiempoRestanteSubasta(uint256 idSubasta_) public view returns(uint) {
+
+        // Devolvemos el tiempo restante, si es que no ha finalizado.
+        if (subastas[idSubasta_].tiempoFin < block.timestamp) {
+            return 0;
+        } else {
+            return subastas[idSubasta_].tiempoFin - block.timestamp;
+        }
 
     }
 
