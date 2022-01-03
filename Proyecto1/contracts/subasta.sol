@@ -60,6 +60,7 @@ contract SubastaDeObjetos {
     }
 
 
+    // Logica Principal
     function crearSubasta(string memory _articulo, string memory _descripcion, uint256 _precio, uint256 _tiempoFin) public {
 
         // Chequeamos que los datos ingresados son correctos.

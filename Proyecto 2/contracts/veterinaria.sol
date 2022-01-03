@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 contract veterinaria {
 
-    // Variables de Manejo de la Veterinaria.
+    // Variable para el duenio del contrato.
     address duenio;
 
     constructor() {
@@ -95,6 +95,7 @@ contract veterinaria {
     }
 
 
+    // Logica Principal
     function crearServicio(string memory _nombreServicio, string memory _descripcionServicio, uint256 _precio) public soloElDuenio {
 
         // Chequeamos que la información ingresada sea correcta.
