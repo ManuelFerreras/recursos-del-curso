@@ -96,6 +96,20 @@ contract periodico {
 
 
     // Logica Principal
+    function modificarPrecioDeSuscripcion(uint256 _nuevoPrecio) public soloElDuenio {
+
+        // Chequeamos que el precio introducido sea el correcto.
+        require(_nuevoPrecio > 0, "El precio debe ser mayor a 0.");
+
+        // Seteamos el nuevo precio.
+        precioSuscripcion = _nuevoPrecio;
+
+        // Emitimos el evento correspondiente.
+        emit nuevoPrecioDeSuscripcion(_nuevoPrecio);
+
+    }
+
+    
     function agregarEscritor(address _direccionDelEscritor) public soloElDuenio soloNoEscritores(_direccionDelEscritor) {
 
         // Seteamos la direccion como escritor.
@@ -140,20 +154,6 @@ contract periodico {
 
         // Emitimos el evento correspondiente.
         emit nuevoSuscrito(msg.sender);
-
-    }
-
-
-    function modificarPrecioDeSuscripcion(uint256 _nuevoPrecio) public soloElDuenio {
-
-        // Chequeamos que el precio introducido sea el correcto.
-        require(_nuevoPrecio > 0, "El precio debe ser mayor a 0.");
-
-        // Seteamos el nuevo precio.
-        precioSuscripcion = _nuevoPrecio;
-
-        // Emitimos el evento correspondiente.
-        emit nuevoPrecioDeSuscripcion(_nuevoPrecio);
 
     }
 
