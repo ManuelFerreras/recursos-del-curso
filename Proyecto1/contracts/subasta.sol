@@ -3,7 +3,7 @@
 pragma solidity >=0.8.0;
 
 
-contract VentaDeObjetos {
+contract SubastaDeObjetos {
     
     // Struct para crear subastas.
     struct Subasta {
