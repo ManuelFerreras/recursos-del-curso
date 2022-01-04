@@ -113,7 +113,17 @@ contract casino {
 
     }
 
+    function devolverBalanceDeUsuario() public view returns(uint256) {
+    
+        // Devolvemos el balance de fichas del usuario.
+        return balanceDeFichas[msg.sender];
+    
+    }
+
     function venderFichas(uint256 _cantidad) public {
+
+        // Chequeamos que el usuario tenga suficientes tokens.
+        require(balanceDeFichas[msg.sender] >= _cantidad, "No posees suficientes fichas.");
 
         // Chequeamos que el contrato tenga suficiente ether para la transaccion.
         require(address(this).balance >= _cantidad * precioDeVentaPorFicha, "No hay suficiente ether.");
