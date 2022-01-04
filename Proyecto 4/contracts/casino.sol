@@ -10,7 +10,18 @@ contract casino {
     uint256 precioDeCompraPorFicha;
     uint256 precioDeVentaPorFicha;
 
-    constructor(uint256 _precioDeCompraPorFicha, uint256 _precioDeVentaPorFicha) {
+    // Variable para el porcentaje de ganancia en el juego.
+    uint256 porcentajeEnVictoria;
+
+    // Enum para opciones del coinflip.
+    enum Opciones {CARA, CRUZ}
+
+    Opciones opcionDefault = Opciones.CARA;
+
+    constructor(uint256 _precioDeCompraPorFicha, uint256 _precioDeVentaPorFicha, uint256 _porcentajeEnVictoria) {
+
+        // Chequeamos que el Porcentaje En Victoria sea mayor a 100.
+        require(_porcentajeEnVictoria > 100, "El porcentaje de ganancia debe ser mayor a 100.");
 
         // Chequeamos que el precio de venta sea menor o igual al precio de compra.
         require(_precioDeVentaPorFicha <= _precioDeCompraPorFicha, "El precio de venta por ficha debe ser menor o igual al precio de compra.");
@@ -22,6 +33,8 @@ contract casino {
         precioDeCompraPorFicha = _precioDeCompraPorFicha;
         precioDeVentaPorFicha = _precioDeVentaPorFicha;
 
+        // Seteamos el porcentaje de ganancia.
+        porcentajeEnVictoria = _porcentajeEnVictoria;
     
     }
 
@@ -32,6 +45,9 @@ contract casino {
     event precioPorFichaModificado(uint256, uint256);
     event fichasCompradas(address, uint256);
     event fichasVendidas(address, uint256);
+    event apuestaGanada(address, uint256);
+    event apuestaPerdida(address, uint256);
+    event nuevoPorcentajeEnVictoria(uint256);
 
     // Modifiers
     modifier soloElDuenio() {
@@ -60,6 +76,19 @@ contract casino {
 
         // Emitimos el evento correspondiente.
         emit precioPorFichaModificado(_nuevoPrecioDeCompra, _nuevoPrecioDeVenta);
+
+    }
+
+    function modificarPorcentajeEnVictoria(uint256 _nuevoPorcentaje) public soloElDuenio {
+
+        // Chequeamos que el nuevo porcentaje sea valido.
+        require(_nuevoPorcentaje > 100, "El nuevo porcentaje debe ser mayor a 100.");
+
+        // Seteamos el nuevo porcentaje.
+        porcentajeEnVictoria = _nuevoPorcentaje;
+
+        // Emitimos el evento correspondiente.
+        emit nuevoPorcentajeEnVictoria(_nuevoPorcentaje);
 
     }
 
@@ -100,6 +129,51 @@ contract casino {
 
     }
 
-    
+
+    // Lógica del juego
+    function _conseguirOpcionGanadora() private returns(Opciones) {
+
+        // Conseguimos el valor ganador aleatorio.
+        uint256 _valorGanador = uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, msg.sender, msg.value, duenio))) % 2;
+
+        // Convertimos el valor a opcion.
+        Opciones _opcion = Opciones(_valorGanador);
+
+        // Retornamos el valor.
+        return _opcion;
+
+    }
+
+    function coinflip(Opciones _opcion, uint256 _apuesta) public {
+
+        // Chequeamos que la apuesta sea valida.
+        require(_apuesta > 0, "La apuesta debe ser mayor a 0.");
+
+        // Chequeamos que el usuario posea las fichas necesarias.
+        require(balanceDeFichas[msg.sender] >= _apuesta, "El usuario no posee suficientes fichas.");
+
+        // Antes que nada restamos la apuesta del balance del usuario.
+        balanceDeFichas[msg.sender] -= _apuesta;
+
+        // Conseguimos el lado ganador.
+        Opciones _opcionGanadora = _conseguirOpcionGanadora();
+
+        // Chequeamos si el usuario ha ganado.
+        if (_opcionGanadora == _opcion) {
+
+            // En caso que el usuario ha ganado, acreditamos el premio.
+            balanceDeFichas[msg.sender] += _apuesta * porcentajeEnVictoria / 100;
+
+            // Emitimos el evento correspondiente.
+            emit apuestaGanada(msg.sender, _apuesta);
+
+        } else {
+        
+            // Emitimos el evento correspondiente.
+            emit apuestaPerdida(msg.sender, _apuesta);
+        
+        }
+
+    }
 
 }
