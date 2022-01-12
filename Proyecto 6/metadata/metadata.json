@@ -4,17 +4,7 @@
     "image" : "https://ipfs.io/ipfs/xxxxx",
     "attributes": [
         {
-            "trait_type": "Strength",
-            "value": 6,
-            "max_value": 10
-        },
-        {
             "trait_type": "Speed",
-            "value": 10,
-            "max_value": 10
-        },
-        {
-            "trait_type": "Jump",
             "value": 10,
             "max_value": 10
         },
@@ -22,11 +12,6 @@
             "trait_type": "Intelligence",
             "value": 5,
             "max_value": 10
-        },
-        {
-            "display_type": "boost_number",
-            "trait_type": "Jump",
-            "value": 1
         },
         {
             "display_type": "boost_percentage",
