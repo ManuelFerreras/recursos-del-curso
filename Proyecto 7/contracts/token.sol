@@ -5,13 +5,12 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 
-contract TokenERC20 is ERC20 {
+contract TokenDePrueba is ERC20 {
 
     // Informacion metadata del token.
     string _name = "Token de Prueba";
     string _symbol = "TDP";
     uint256 _totalSupply = 1000 * 10 ** 18;
-    uint8 _decimals;
 
     // Pasamos a ERC20 los argumentos necesarios para el constructor.
     constructor() ERC20(_name, _symbol) {
