@@ -23,9 +23,9 @@ contract SubastaDeObjetos {
 
 
     // Eventos
-    event nuevaSubasta(string, string, uint, uint, address);
-    event nuevaOferta(uint, uint, address);
-    event ganadorDeSubasta(address, uint);
+    event nuevaSubasta(Subasta);
+    event nuevaOferta(uint, uint, address); // Id, Valor, Quien oferto
+    event ganadorDeSubasta(address, uint); // Ganador, Id
 
 
     // Modificadores
@@ -74,7 +74,7 @@ contract SubastaDeObjetos {
         subastasDeDireccion[msg.sender].push(subastas.length);
 
         // Emitimos el Evento Correspondiente.
-        emit nuevaSubasta(_articulo, _descripcion, _precio, _tiempoFin + block.timestamp, msg.sender);
+        emit nuevaSubasta(subastas[subastas.length - 1]);
 
     }
 
